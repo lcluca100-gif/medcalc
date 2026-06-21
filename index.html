@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedCalc Hospitalar</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#3498db">
+    <style>
+        :root {
+            --primary: #3498db;
+            --success: #27ae60;
+            --warning: #e67e22;
+            --danger: #c0392b;
+            --dark: #2c3e50;
+            --light: #f8f9fa;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background: #ebeeef; padding-bottom: 30px; }
+        header { background: var(--dark); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .header-title { font-size: 1.2rem; font-weight: bold; }
+        .tab-container-scroll { display: flex; overflow-x: auto; background: white; padding: 10px; gap: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .tab-btn { padding: 8px 16px; border: none; background: #e0e0e0; border-radius: 20px; cursor: pointer; white-space: nowrap; font-weight: bold; }
+        .tab-btn.active { background: var(--primary); color: white; }
+        .main-content { padding: 15px; }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 15px; }
+        .card-title { font-size: 1.1rem; font-weight: bold; color: var(--dark); margin-bottom: 15px; border-bottom: 2px solid #f1f1f1; padding-bottom: 5px; }
+        .input-group { margin-bottom: 15px; }
+        .input-labels { display: flex; justify-content: space-between; margin-bottom: 5px; font-weight: 600; color: #34495e; }
+        input[type="number"] { width: 100%; padding: 12px; border: 2px solid #bdc3c7; border-radius: 6px; font-size: 1.1rem; outline: none; }
+        input[type="number"]:focus { border-color: var(--primary); }
+        .btn-calc { width: 100%; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 6px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 5px; margin-bottom: 15px; }
+        .btn-calc:active { background: #2980b9; }
+        .result-box { background: var(--light); padding: 15px; border-radius: 6px; text-align: center; margin-top: 15px; border-left: 5px solid var(--primary); }
+        .result-title { font-size: 0.9rem; color: #7f8c8d; text-transform: uppercase; margin-bottom: 5px; }
+        .result-value { font-size: 1.8rem; font-weight: bold; margin-bottom: 5px; }
+        .result-interpretation { font-weight: bold; }
+        
+        /* Estilos do Histórico */
+        .history-item { padding: 12px; border-bottom: 1px solid #eee; font-size: 0.95rem; line-height: 1.4; color: #333; }
+        .history-item:last-child { border-bottom: none; }
+        .history-tag { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; color: white; margin-right: 5px; }
+        .tag-hgt { background-color: #9b59b6; }
+        .tag-regra { background-color: #e67e22; }
+        .tag-gotejo { background-color: #1abc9c; }
+        .tag-imc { background-color: #34495e; }
+        .history-time { font-size: 0.8rem; color: #95a5a6; float: right; }
+        .btn-clear { background: var(--danger); font-size: 0.9rem; padding: 8px; margin-top: 10px; }
+        .empty-history { text-align: center; color: #7f8c8d; padding: 20px 0; }
+    </style>
+</head>
+<body>
+
+    <header {background: var(--dark); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center;}>
+        <div class="header-title" id="page-title">Glicemia Capilar (HGT)</div>
+    </header>
+
+    <div class="tab-container-scroll">
+        <button class="tab-btn active" onclick="navegarAba('hgt-pane', 'Glicemia Capilar (HGT)', event)">Correção HGT</button>
+        <button class="tab-btn" onclick="navegarAba('redil-pane', 'Regra de Três / Farmacologia', event)">Regra de Três</button>
+        <button class="tab-btn" onclick="navegarAba('soro-pane', 'Soroterapia / Gotejo', event)">Gotejamento</button>
+        <button class="tab-btn" onclick="navegarAba('imc-pane', 'Avaliação Nutricional', event)">IMC</button>
+        <button class="tab-btn" onclick="navegarAba('history-pane', 'Histórico de Cálculos', event)" style="background: #bdc3c7;">📋 Histórico</button>
+    </div>
+
+    <main class="main-content">
+        <!-- CALCULADORA HGT -->
+        <div id="hgt-pane" class="tab-pane active">
+            <div class="card">
+                <div class="card-title">Correção por Fator de Sensibilidade</div>
+                <div class="input-group"><div class="input-labels"><span>HGT Medido (mg/dL)</span></div><input type="number" id="num-hgt" value="250"></div>
+                <div class="input-group"><div class="input-labels"><span>Meta Alvo (mg/dL)</span></div><input type="number" id="num-meta" value="150"></div>
+                <div class="input-group"><div class="input-labels"><span>Fator de Sensibilidade (mg/dL por UI)</span></div><input type="number" id="num-fs" value="50"></div>
+                <button class="btn-calc" onclick="calcularHGT()">Calcular Insulina</button>
+                <div class="result-box">
+                    <div class="result-title">Dose de Insulina Regular</div>
+                    <div class="result-value" id="out-insulina">-- UI</div>
+                    <div class="result-interpretation" id="status-hgt">--</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CALCULADORA REGRA DE TRÊS -->
+        <div id="redil-pane" class="tab-pane">
+            <div class="card">
+                <div class="card-title">Regra de Três / Rediluição</div>
+                <div class="input-group"><div class="input-labels"><span>Apresentação Disponível (mg)</span></div><input type="number" id="num-disponivel" value="500"></div>
+                <div class="input-group"><div class="input-labels"><span>Diluente Utilizado (mL)</span></div><input type="number" id="num-diluente" value="10"></div>
+                <div class="input-group"><div class="input-labels"><span>Prescrição Médica (mg)</span></div><input type="number" id="num-prescrito" value="250"></div>
+                <button class="btn-calc" onclick="calcularRegra3()">Calcular Dosagem</button>
+                <div class="result-box">
+                    <div class="result-title">Volume a Aspirar na Seringa</div>
+                    <div class="result-value" id="out-aspirar">-- mL</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CALCULADORA GOTEJAMENTO -->
+        <div id="soro-pane" class="tab-pane">
+            <div class="card">
+                <div class="card-title">Gotejamento de Soluções</div>
+                <div class="input-group"><div class="input-labels"><span>Volume do Soro (mL)</span></div><input type="number" id="num-vol" value="500"></div>
+                <div class="input-group"><div class="input-labels"><span>Tempo Limite (Horas)</span></div><input type="number" id="num-tempo" value="6"></div>
+                <button class="btn-calc" onclick="calcularGotejo()">Calcular Gotas</button>
+                <div class="result-box">
+                    <div class="result-title">Velocidade Macrogotas</div>
+                    <div class="result-value" id="out-gotas">-- Gotas / Minuto</div>
+                    <div class="result-title" style="margin-top:10px;">Equivalente em Microgotas (mL/h)</div>
+                    <div class="result-value" id="out-micro">-- Microgotas / Minuto</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CALCULADORA IMC -->
+        <div id="imc-pane" class="tab-pane">
+            <div class="card">
+                <div class="card-title">Índice de Massa Corporal (Adulto)</div>
+                <div class="input-group"><div class="input-labels"><span>Peso Corporal (kg)</span></div><input type="number" id="num-peso" value="70"></div>
+                <div class="input-group"><div class="input-labels"><span>Estatura (cm)</span></div><input type="number" id="num-altura" value="170"></div>
+                <button class="btn-calc" onclick="calcularIMC()">Calcular IMC</button>
+                <div class="result-box">
+                    <div class="result-title">Avaliação do IMC</div>
+                    <div class="result-value" id="out-imc">--</div>
+                    <div class="result-interpretation" id="status-imc">--</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA DE HISTÓRICO -->
+        <div id="history-pane" class="tab-pane">
+            <div class="card">
+                <div class="card-title">Últimos 10 Cálculos Realizados</div>
+                <div id="history-list"></div>
+                <button class="btn-calc btn-clear" onclick="limparHistorico()">Limpar Histórico</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                .then(() => console.log("PWA: Modo offline configurado."))
+                .catch(err => console.log("PWA: Falha ao carregar offline.", err));
+            });
+        }
+
+        function navegarAba(idAlvo, titulo, evento) {
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(idAlvo).classList.add('active');
+            document.getElementById('page-title').innerText = titulo;
+            if (evento && evento.currentTarget) {
+                evento.currentTarget.classList.add('active');
+            }
+            if(idAlvo === 'history-pane') atualizarListaHistorico();
+        }
