@@ -1,4 +1,4 @@
-const CACHE_NAME = 'medcalc-enf-v1';
+const CACHE_NAME = 'medcalc-enf-v2';
 const ASSETS = [
   './index.html',
   './manifest.json'
@@ -21,5 +21,17 @@ self.addEventListener('activate', e => {
         })
       );
     }).then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener('fetch', e => {
+  e.respondWith(
+    fetch(e.request).then(response => {
+      const resClone = response.clone();
+      caches.open(CACHE_NAME).then(cache => cache.put(e.request, resClone));
+      return response;
+    }).catch(() => {
+      return caches.match(e.request);
+    })
   );
 });
