@@ -21,6 +21,8 @@
             --accent: #3498db;
             --text: #ffffff;
             --success: #27ae60;
+            --warning: #f1c40f;
+            --danger: #e74c3c;
         }
 
         * {
@@ -34,7 +36,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-primary);
             color: var(--text);
-            padding: 15px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -43,20 +45,50 @@
 
         header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
             width: 100%;
             max-width: 500px;
         }
 
         h1 {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             color: var(--accent);
         }
 
         p.subtitle {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             opacity: 0.7;
-            margin-top: 2px;
+        }
+
+        /* Menu de 3 Abas Superior Otimizado */
+        .nav-tabs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            width: 100%;
+            max-width: 500px;
+            background-color: #1a252f;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            padding: 3px;
+            gap: 2px;
+        }
+
+        .tab-btn {
+            padding: 12px 2px;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            text-align: center;
+            opacity: 0.6;
+        }
+
+        .tab-btn.active {
+            background-color: var(--accent);
+            opacity: 1;
         }
 
         main {
@@ -64,144 +96,171 @@
             max-width: 500px;
             background-color: var(--bg-secondary);
             border-radius: 12px;
-            padding: 20px;
+            padding: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        .calc-section h2 {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
+        .calc-page {
+            display: none;
+        }
+
+        .calc-page.active {
+            display: block;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
             border-bottom: 2px solid var(--accent);
-            padding-bottom: 5px;
+            padding-bottom: 4px;
         }
 
         .input-group {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .input-group label {
             display: block;
-            font-size: 0.9rem;
-            margin-bottom: 5px;
-            opacity: 0.9;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
         }
 
         .input-group input, .input-group select {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             border-radius: 6px;
             border: none;
             background-color: #1a252f;
             color: #fff;
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
 
         .btn-calc {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             background-color: var(--accent);
             border: none;
             border-radius: 6px;
             color: white;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .btn-calc:active {
-            background-color: #2980b9;
         }
 
         .result-box {
-            margin-top: 20px;
-            padding: 15px;
+            margin-top: 15px;
+            padding: 12px;
             background-color: #1a252f;
             border-left: 5px solid var(--success);
             border-radius: 4px;
             display: none;
+            font-size: 0.9rem;
         }
 
-        .result-box p {
-            margin-bottom: 5px;
-            font-size: 1rem;
+        /* Estilos para cards informativos */
+        .info-card {
+            background-color: #1a252f;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--accent);
         }
 
-        .result-box span {
-            font-weight: bold;
-            color: var(--success);
-        }
+        .info-card.warning { border-left-color: var(--warning); }
+        .info-card.danger { border-left-color: var(--danger); }
+        .info-card h3 { font-size: 0.9rem; margin-bottom: 5px; color: var(--accent); }
+        .info-card h3.w-title { color: var(--warning); }
+        .info-card p { font-size: 0.8rem; opacity: 0.8; line-height: 1.35; margin-bottom: 5px; }
+        .info-card ul { font-size: 0.8rem; opacity: 0.8; margin-left: 15px; margin-bottom: 5px; }
+        .info-card li { margin-bottom: 3px; }
+        .info-card a { color: var(--accent); text-decoration: none; font-weight: bold; font-size: 0.8rem; display: inline-block; margin-top: 5px;}
     </style>
 </head>
 <body>
 
     <header>
         <h1>MedCalc Hospitalar</h1>
-        <p class="subtitle">Calculadoras de bolso para rotina médica</p>
+        <p class="subtitle">Calculadoras & Gestão Profissional</p>
     </header>
 
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('soro')">Soro</button>
+        <button class="tab-btn" onclick="switchTab('med')">Med.</button>
+        <button class="tab-btn" onclick="switchTab('alertas')">Alertas & Leis</button>
+    </div>
+
     <main id="app-container">
-        <div class="calc-section">
+        
+        <!-- ABA 1: SORO -->
+        <div id="page-soro" class="calc-page active">
             <h2>Gotejamento de Soro</h2>
-            
             <div class="input-group">
-                <label for="volume">Volume do Soro (ml):</label>
+                <label>Volume do Soro (ml):</label>
                 <input type="number" id="volume" placeholder="Ex: 500" inputmode="numeric">
             </div>
-
             <div class="input-group">
-                <label for="tempo">Tempo de Infusão (Horas):</label>
+                <label>Tempo (Horas):</label>
                 <input type="number" id="tempo" placeholder="Ex: 4" inputmode="numeric">
             </div>
-
             <div class="input-group">
-                <label for="tipo">Tipo de Gota:</label>
+                <label>Tipo de Gota:</label>
                 <select id="tipo">
-                    <option value="macro">Macrogotas (Gotas/min)</option>
-                    <option value="micro">Microgotas (Microgotas/min)</option>
+                    <option value="macro">Macrogotas</option>
+                    <option value="micro">Microgotas</option>
                 </select>
             </div>
-
             <button class="btn-calc" onclick="calcularGotejamento()">Calcular Gotas</button>
-
-            <div class="result-box" id="resultado">
-                <p>Resultado:</p>
-                <p style="font-size: 1.2rem;"><span id="valor-resultado">0</span> por minuto</p>
+            <div class="result-box" id="resultado-soro">
+                <p><span id="valor-soro">0</span> por minuto</p>
             </div>
         </div>
-    </main>
 
-    <script>
-        function calcularGotejamento() {
-            const volume = parseFloat(document.getElementById('volume').value);
-            const tempo = parseFloat(document.getElementById('tempo').value);
-            const tipo = document.getElementById('tipo').value;
-            const resBox = document.getElementById('resultado');
-            const resVal = document.getElementById('valor-resultado');
+        <!-- ABA 2: MEDICAMENTOS -->
+        <div id="page-med" class="calc-page">
+            <h2>Diluição de Medicamentos</h2>
+            <div class="input-group">
+                <label>Frasco Disponível (mg ou g):</label>
+                <input type="number" id="med-disponivel" placeholder="Ex: 500" inputmode="numeric">
+            </div>
+            <div class="input-group">
+                <label>Volume do Diluente (ml):</label>
+                <input type="number" id="med-diluente" placeholder="Ex: 10" inputmode="numeric">
+            </div>
+            <div class="input-group">
+                <label>Dose Prescrita (mg ou g):</label>
+                <input type="number" id="med-prescrito" placeholder="Ex: 250" inputmode="numeric">
+            </div>
+            <button class="btn-calc" onclick="calcularMedicamento()">Calcular Volume</button>
+            <div class="result-box" id="resultado-med">
+                <p>Aspirar exatamente: <span id="valor-med">0</span> ml</p>
+            </div>
+        </div>
 
-            if (!volume || !tempo || volume <= 0 || tempo <= 0) {
-                alert('Por favor, insira valores válidos para Volume e Tempo.');
-                return;
-            }
+        <!-- ABA 3: CENTRAL DE ALERTAS, OBRIGAÇÕES FISCAIS E CONCURSOS -->
+        <div id="page-alertas" class="calc-page">
+            <h2>Alertas Contábeis e Carreira</h2>
+            
+            <div class="info-card warning">
+                <h3 class="w-title">⚠️ Obrigações Fiscais e Contábeis</h3>
+                <p>A entrega da Declaração de Ajuste Anual de Imposto de Renda e o acompanhamento contábil mensal são obrigatórios para todos os regimes de atuação. A ausência de regularização gera multas automáticas e restrição no CPF/CNPJ.</p>
+                
+                <ul style="margin-top: 5px;">
+                    <li><b>Pessoa Jurídica (PJ):</b> Obrigatório manter contabilidade regular. Emissão mensal de notas fiscais, recolhimento da guia DAS (Simples Nacional) ou impostos federais presumidos, além da escrituração contábil anual [2].</li>
+                    <li><b>Seletista (CLT) e Efetivo (Estatutário):</b> Retenção do IR ocorre direto na fonte pagadora mensalmente. É obrigatório monitorar os Informes de Rendimentos para evitar a Malha Fina ao acumular múltiplos vínculos e plantões [3].</li>
+                    <li><b>Contratado Temporário:</b> Segue a regra do recolhimento na fonte ou via Carnê-Leão (Livro Caixa) caso preste serviços autônomos sem vínculo formal de emprego.</li>
+                </ul>
+            </div>
 
-            let resultado = 0;
-            if (tipo === 'macro') {
-                resultado = Math.round(volume / (tempo * 3));
-            } else {
-                resultado = Math.round(volume / tempo);
-            }
+            <div class="info-card">
+                <h3>📢 Concursos e Processos Seletivos</h3>
+                <p>Editais nacionais de saúde abertos (EBSERH, Residências Médicas e Multiprofissionais, e Secretarias de Saúde Estaduais/Municipais). Mantenha seus títulos atualizados.</p>
+                <a href="https://pciconcursos.com.br" target="_blank">Ver Concursos Abertos ↗</a>
+            </div>
 
-            resVal.innerText = resultado;
-            resBox.style.display = 'block';
-        }
+            <div class="info-card">
+                <h3>📚 Cursos e Certificações Recomendados</h3>
+                <p>Garanta pontuação em provas de títulos e segurança em plantões de alta complexidade (UTI e Emergência) por meio de certificações validadas: <b>BLS, ACLS, PALS e ATLS</b>.</p>
+            </div>
 
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('Service Worker registrado!'))
-                    .catch(err => console.error('Erro no SW:', err));
-            });
-        }
-    </script>
-</body>
-</html>
+            <div class="info-card danger">
+                <h3 style="color:var(--danger)">⚖️ Informações Legais e Isenção</h3>
