@@ -1,28 +1,4 @@
-{
-  "name": "MedCalc Enfermagem",
-  "short_name": "MedCalc Enf",
-  "description": "Calculadoras avançadas e práticas para rotina hospitalar e ambulatorial.",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "background_color": "#1e272e",
-  "theme_color": "#27ae60",
-  "orientation": "portrait",
-  "icons": [
-    {
-      "src": "https://flaticon.com",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "https://flaticon.com",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    }
-  ]
-}
-Use o código com cuidado.(Nota: Substituí o link genérico anterior por um ícone de enfermagem real e funcional para o carregamento inicial).2. Certifique-se de ter o arquivo sw.jsEste arquivo é o Service Worker que intercepta as requisições. Se o celular estiver sem internet, ele puxa o código da memória instantaneamente. Salve-o na mesma pasta:javascriptconst CACHE_NAME = 'medcalc-enf-v1';
+const CACHE_NAME = 'medcalc-enf-v2';
 const ASSETS = [
   './index.html',
   './manifest.json'
